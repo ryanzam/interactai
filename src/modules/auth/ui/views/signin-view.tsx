@@ -7,13 +7,12 @@ import { Button } from "@/components/ui/button"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { OctagonAlertIcon } from "lucide-react"
+import { Github, OctagonAlertIcon } from "lucide-react"
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import Link from "next/link"
 import { useState } from "react"
 
 import { authClient } from "@/lib/auth-client"
-import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
     email: z.string().email({ message: "Invalid email address." }),
@@ -22,7 +21,6 @@ const formSchema = z.object({
 
 export const SigninView = () => {
 
-    const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -41,12 +39,11 @@ export const SigninView = () => {
         authClient.signIn.email({
             email: values.email,
             password: values.password,
+            callbackURL: "/"
         },
             {
                 onSuccess: () => {
                     setLoading(false);
-                    router.push("/");
-
                 },
                 onError: ({ error }) => {
                     setLoading(false);
@@ -110,10 +107,18 @@ export const SigninView = () => {
 
                                 <div className="flex items-center text-sm text-gray-800 before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-white dark:before:border-neutral-600 dark:after:border-neutral-600">Or continue with</div>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Button type="button" variant="outline" disabled={loading}>Github</Button>
-                                    <Button type="button" variant="outline" disabled={loading}>Google</Button>
-                                </div>
+                                <div className="grid grid-cols-1 gap-4">
+                                    <Button type="button" variant="outline" disabled={loading}
+                                        onClick={() => {
+                                            authClient.signIn.social({ provider: "github" });
+                                        }}
+                                    ><Github /> Github</Button>
+                                    {/*     Implement Google Auth later
+                                <Button type="button" variant="outline" disabled={loading}
+                                        onClick={() => {
+                                            authClient.signIn.social({ provider: "google" });
+                                        }}
+                                    >Google</Button> */}                                </div>
                                 <div>
                                     Don&apos;t have an account? <Link href="/signup" className="text-primary underline underline-offset-3">Register</Link>
                                 </div>

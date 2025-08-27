@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { OctagonAlertIcon } from "lucide-react"
+import { Github, OctagonAlertIcon } from "lucide-react"
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import Link from "next/link"
 import { useState } from "react"
@@ -27,9 +27,10 @@ const formSchema = z.object({
 
 export const SignupView = () => {
 
-    const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+
+    const router = useRouter();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -49,12 +50,12 @@ export const SignupView = () => {
             name: values.name,
             email: values.email,
             password: values.password,
+            callbackURL: "/"
         },
             {
                 onSuccess: () => {
                     setLoading(false);
                     router.push("/");
-
                 },
                 onError: ({ error }) => {
                     setLoading(false);
@@ -146,14 +147,37 @@ export const SignupView = () => {
                                     </Alert>
                                 )}
                                 <Button type="submit" disabled={loading}>
-                                    {loading ? "Logging in..." : "Login"}
+                                    {loading ? "Signing up..." : "Sign up"}
                                 </Button>
 
                                 <div className="flex items-center text-sm text-gray-800 before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-white dark:before:border-neutral-600 dark:after:border-neutral-600">Or continue with</div>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Button type="button" variant="outline" disabled={loading}>Github</Button>
-                                    <Button type="button" variant="outline" disabled={loading}>Google</Button>
+                                <div className="grid grid-cols-1">
+                                    <Button type="button" variant="outline" disabled={loading}
+                                        onClick={() => {
+                                            authClient.signIn.social(
+                                                {
+                                                    provider: "github",
+                                                    callbackURL: "/"
+                                                },
+                                                {
+                                                    onSuccess: () => {
+                                                        setLoading(false);
+                                                    },
+                                                    onError: ({ error }) => {
+                                                        setLoading(false);
+                                                        setError(error.message)
+                                                    }
+                                                }
+                                            );
+                                        }}
+                                    ><Github /> Github</Button>
+                                    {/*     Implement Google Auth later
+                                <Button type="button" variant="outline" disabled={loading}
+                                        onClick={() => {
+                                            authClient.signIn.social({ provider: "google" });
+                                        }}
+                                    >Google</Button> */}
                                 </div>
                                 <div>
                                     Already have an account? <Link href="/signin" className="text-primary underline underline-offset-3">Sign in</Link>

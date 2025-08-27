@@ -1,11 +1,19 @@
-"use client"
-
+import { auth } from '@/lib/auth'
 import { SignupView } from '@/modules/auth/ui/views/signup-view'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import React from 'react'
 
-console.log('signup page')
+const SignupPage = async () => {
 
-const SignupPage = () => {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    })
+
+    if (!!session) {
+        redirect('/');
+    }
+
     return (
         <SignupView />
     )
