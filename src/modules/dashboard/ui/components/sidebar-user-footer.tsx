@@ -3,9 +3,8 @@
 import AvatarGenerate from '@/components/avatar-generate'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { authClient } from '@/lib/auth-client'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { ChevronDown, CreditCard, LogOutIcon } from 'lucide-react'
-import { DropdownMenuItem } from '@radix-ui/react-dropdown-menu'
 import { useRouter } from 'next/navigation'
 
 const SidebarUserFooter = () => {
