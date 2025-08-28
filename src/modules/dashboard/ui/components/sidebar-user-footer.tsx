@@ -6,14 +6,19 @@ import { authClient } from '@/lib/auth-client'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { ChevronDown, CreditCard, LogOutIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer'
+import { Button } from '@/components/ui/button'
 
 const SidebarUserFooter = () => {
 
     const router = useRouter()
+    const isMobile = useIsMobile()
 
     const { data, isPending } = authClient.useSession()
 
     if (isPending || !data?.user) return null;
+
 
     const onLogout = () => {
         authClient.signOut({
@@ -23,6 +28,40 @@ const SidebarUserFooter = () => {
                 }
             }
         })
+    }
+
+    if (isMobile) {
+        return <Drawer>
+            <DrawerTrigger className='p-3 border rounded-lg flex items-center bg-black/20 hover:bg-black/10'>
+                {data.user.image ? (
+                    <Avatar>
+                        <AvatarImage src={data.user.image as string} />
+                    </Avatar>
+                ) : <AvatarGenerate seed={data.user.name} variant='initials' className='size-8 mr-3' />}
+
+                <div className='text-left'>
+                    <p className='text-sm font-bold truncate'>{data.user.name}</p>
+                    <p className='text-xs truncate'>{data.user.email}</p>
+                </div>
+                <ChevronDown className='size-4 shrink-0 ml-auto' />
+            </DrawerTrigger>
+            <DrawerContent>
+                <DrawerHeader>
+                    <DrawerTitle>{data.user.name}</DrawerTitle>
+                    <DrawerDescription>{data.user.email}</DrawerDescription>
+                </DrawerHeader>
+                <DrawerFooter>
+                    <Button variant='outline' onClick={() => { }}>
+                        Billing
+                        <CreditCard className='size-4 ml-auto' />
+                    </Button>
+                    <Button onClick={onLogout} className='p-3 cursor-pointer flex items-center justify-between hover:bg-black/10'>
+                        Logout
+                        <LogOutIcon className='size-4 ml-auto' />
+                    </Button>
+                </DrawerFooter>
+            </DrawerContent>
+        </Drawer>
     }
 
     return (
