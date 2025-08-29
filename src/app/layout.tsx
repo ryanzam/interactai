@@ -4,6 +4,7 @@ import { Montserrat } from "next/font/google";
 import { TRPCReactProvider } from '@/trpc/client'
 
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -25,6 +26,7 @@ export default function RootLayout({
         <body
           className={`${montserrat.className} antialiased`}
         >
+          <Toaster />
           {children}
         </body>
       </html>
