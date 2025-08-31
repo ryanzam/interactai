@@ -8,15 +8,18 @@ import React from 'react'
 import { DataTable } from '../components/data-table'
 import { columns } from '../components/colums'
 import EmptyComponent from '@/components/empty-component'
+import { useRouter } from 'next/navigation'
 
 export const AgentsView = () => {
 
     const trpc = useTRPC()
     const { data } = useSuspenseQuery(trpc.agents.getMany.queryOptions())
 
+    const router = useRouter()
+
     return (
-        <div className='flex-1 pb-4 px-4'>
-            <DataTable data={data} columns={columns} />
+        <div className='flex-1 p-4'>
+            <DataTable data={data} columns={columns} onClickRow={(row) => router.push(`/agents/${row.id}`)} />
 
             {data.length === 0 && (
                 <EmptyComponent title='Create your first agent' description='Interact with agent by creating your agent.' />
@@ -25,13 +28,13 @@ export const AgentsView = () => {
     )
 }
 
-export const AgentViewLoadingComponent = () => {
+export const AgentsViewLoadingComponent = () => {
     return (
         <LoadingComponent title='Agents loading...' description='Please wait...' />
     )
 }
 
-export const AgentViewErrorComponent = () => {
+export const AgentsViewErrorComponent = () => {
     return (
         <ErrorComponent title='Error loading agents...' description='Please try later...' />
     )

@@ -1,4 +1,4 @@
-import { AgentsView, AgentViewErrorComponent, AgentViewLoadingComponent } from '@/modules/agents/ui/views/agents-view'
+import { AgentsView, AgentsViewErrorComponent, AgentsViewLoadingComponent } from '@/modules/agents/ui/views/agents-view'
 import { getQueryClient, trpc } from '@/trpc/server'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -26,8 +26,8 @@ export const AgentsPage = async () => {
             <AgentListheader />
 
             <HydrationBoundary state={dehydrate(queryClient)}>
-                <Suspense fallback={<AgentViewLoadingComponent />}>
-                    <ErrorBoundary fallback={<AgentViewErrorComponent />}>
+                <Suspense fallback={<AgentsViewLoadingComponent />}>
+                    <ErrorBoundary fallback={<AgentsViewErrorComponent />}>
                         <AgentsView />
                     </ErrorBoundary>
                 </Suspense>
