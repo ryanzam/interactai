@@ -1,13 +1,25 @@
 "use client"
 
 import { Button } from '@/components/ui/button'
-import { UserRoundPlus } from 'lucide-react'
+import { Delete, UserRoundPlus } from 'lucide-react'
 import React, { useState } from 'react'
 import NewAgentDialog from './new-agent-dialog'
+import { useAgentFilters } from '../../hooks/use-agents-filters'
+import AgentsSearchFilters from './agents-search-filters'
+import { DEFAULT_PAGE } from '@/constants'
 
 const AgentListheader = () => {
 
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [filters, setFilters] = useAgentFilters()
+
+    const isAnyFilterModified = !!filters.search
+
+    const onClearFilters = () => {
+        setFilters({
+            search: "", page: DEFAULT_PAGE
+        })
+    }
 
     return (
         <>
@@ -18,6 +30,15 @@ const AgentListheader = () => {
                     <Button onClick={() => setIsDialogOpen(true)}>
                         <UserRoundPlus /> New Agent
                     </Button>
+                </div>
+
+                <div className='flex'>
+                    <AgentsSearchFilters />
+                    {isAnyFilterModified && (
+                        <Button variant={"outline"} className='h-10' onClick={onClearFilters}>
+                            <Delete />
+                        </Button>
+                    )}
                 </div>
             </div>
         </>
