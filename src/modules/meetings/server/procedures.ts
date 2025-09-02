@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { meetings } from "@/db/schema";
+import { agents, meetings } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import z from "zod";
 
@@ -18,7 +18,7 @@ export const meetingsRouter = createTRPCRouter({
                 .from(meetings)
                 .where(and(
                     eq(meetings.id, input.id),
-                    eq(meetings.userId, ctx.auth.user.id)
+                    eq(meetings.userId, ctx.auth.user.id) 
                 ))
 
             if (!existingMeeting) throw new TRPCError({ code: "NOT_FOUND", message: "Agent not found" })
@@ -33,8 +33,11 @@ export const meetingsRouter = createTRPCRouter({
         .query(async ({ input, ctx }) => {
             const { page, pageSize, search } = input
             const data = await db.select({
-                ...getTableColumns(meetings)
+                ...getTableColumns(meetings),
+                agent: agents,
+                duration: sql<number> `EXTRACT(EPOCH FROM (ended_at - started_at))`.as("duration")
             }).from(meetings)
+                .innerJoin(agents, eq(meetings.agentId, agents.id))
                 .where(and(
                     eq(meetings.userId, ctx.auth.user.id),
                     search ? ilike(meetings.name, `%${search}%`) : undefined
@@ -43,6 +46,7 @@ export const meetingsRouter = createTRPCRouter({
 
             const [total] = await db.select({ count: count() })
                 .from(meetings)
+                .innerJoin(agents, eq(meetings.agentId, agents.id))
                 .where(and(
                     eq(meetings.userId, ctx.auth.user.id),
                     search ? ilike(meetings.name, `%${search}%`) : undefined
