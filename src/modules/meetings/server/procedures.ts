@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { agents, meetings } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
-import z from "zod";
+import z, { string } from "zod";
 
 import { eq, and, sql, getTableColumns, ilike, desc, count } from "drizzle-orm"
 import { TRPCError } from "@trpc/server";
@@ -14,9 +14,12 @@ export const meetingsRouter = createTRPCRouter({
         .query(async ({ input, ctx }) => {
 
             const [existingMeeting] = await db.select({
-                ...getTableColumns(meetings)
+                ...getTableColumns(meetings),
+                agent: agents,
+                duration: sql<number> `EXTRACT(EPOCH FROM (ended_at - started_at))`.as("duration")
             })
                 .from(meetings)
+                .innerJoin(agents, eq(meetings.agentId, agents.id))
                 .where(and(
                     eq(meetings.id, input.id),
                     eq(meetings.userId, ctx.auth.user.id)
@@ -95,5 +98,18 @@ export const meetingsRouter = createTRPCRouter({
 
             if (!updatedMeeting) throw new TRPCError({ code: "NOT_FOUND", message: "Meeting not found" })
             return updatedMeeting
+        }),
+    remove: protectedProcedure.input(z.object({id: string()}))
+        .mutation(async ({ input, ctx }) => {
+            const [removeMeeting] = await db.delete(meetings)
+                .where(
+                    and(
+                        eq(meetings.id, input.id),
+                        eq(meetings.userId, ctx.auth.user.id)
+                    )
+                ).returning()
+
+            if (!removeMeeting) throw new TRPCError({ code: "NOT_FOUND", message: "Meeting not found" })
+            return removeMeeting
         })
 })
