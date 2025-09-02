@@ -7,6 +7,7 @@ import { useTRPC } from '@/trpc/client'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import React from 'react'
 import { columns } from '../components/colums'
+import EmptyComponent from '@/components/empty-component'
 
 export const MeetingsView = () => {
 
@@ -15,7 +16,10 @@ export const MeetingsView = () => {
 
     return (
         <div className='flex-1 px-4'>
-            <DataTable data={data.items} columns={columns}/>
+            <DataTable data={data.items} columns={columns} />
+            {data.items.length === 0 && (
+                <EmptyComponent title='Create your first meeting' description='Interact with agent by scheduling a meetings.' />
+            )}
         </div>
     )
 }
