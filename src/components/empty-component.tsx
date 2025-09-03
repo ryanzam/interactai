@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { ReactNode } from "react"
 
 interface EmptyProps {
     title: string

@@ -9,6 +9,10 @@ import { MeetingHeader } from '../components/meeting-header'
 import { useRouter } from 'next/navigation'
 import { useConfirmation } from '@/hooks/use-confirmation'
 import UpdateMeetingDialog from '../components/update-meeting-dialog'
+import { Upcoming } from '../components/upcoming'
+import { Active } from '../components/active'
+import { Cancelled } from '../components/cancelled'
+import { Processing } from '../components/processing'
 
 interface MeetingViewProps {
     meetingId: string
@@ -49,12 +53,24 @@ export const MeetingView = ({ meetingId }: MeetingViewProps) => {
         await removeMeeting.mutateAsync({ id: meetingId })
     }
 
+    const isActive = data.status === "active"
+    const isUpcoming = data.status === "upcoming"
+    const isCompleted = data.status === "completed"
+    const isProcessinng = data.status === "processing"
+    const isCancelled = data.status === "cancelled"
+
     return (
         <>
             <RemoveConfirmation />
             <UpdateMeetingDialog open={updateMeetingDialog} onOpenChange={setUpdateMeetingDialog} initialValues={data} />
             <div className='flex-1 p-4'>
                 <MeetingHeader meetingId={data.id} meetingName={data.name} onEdit={() => setUpdateMeetingDialog(true)} onRemove={handleRemoveMeeting} />
+
+                {isUpcoming && <Upcoming meetingId={meetingId} onCancelMeeting={() => { }} isCancelling={false} />}
+                {isActive && <Active meetingId={meetingId} />}
+                {isCancelled && <Cancelled />}
+                {isProcessinng && <Processing />}
+
             </div>
         </>
     )
