@@ -1,7 +1,6 @@
 import ResponsiveDialog from '@/components/responsive-dialog'
 import React from 'react'
 import MeetingForm from './meeting-form'
-import { id } from 'date-fns/locale'
 import { useRouter } from 'next/navigation'
 
 interface NewMeetingDialogProps {
@@ -22,7 +21,7 @@ const NewMeetingDialog = ({ open, onOpenChange }: NewMeetingDialogProps) => {
         >
             <MeetingForm onSuccess={() => {
                 onOpenChange(false)
-                router.push(`/meetings/${id}`)
+                router.push(`/meetings`)
             }} onCancel={() => onOpenChange(false)} />
         </ResponsiveDialog>
     )
